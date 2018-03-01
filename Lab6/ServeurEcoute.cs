@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Sockets;
+using System.Net;
 
 namespace Lab6
 {
@@ -17,8 +18,8 @@ namespace Lab6
         //Méthode de la thread
         public void MaThreadEcoute()
         {
-            EndPoint PointLocal = new IPEndPoint(...);
-            EndPoint PointDistant = new IPEndPoint(...);
+            //EndPoint PointLocal = new IPEndPoint(...);
+            //EndPoint PointDistant = new IPEndPoint(...);
             
         }
 
