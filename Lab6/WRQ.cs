@@ -7,6 +7,7 @@ using System.Net;
 
 namespace Lab6
 {
+    //Ca cest moi moi moi
     class WRQ
     {
 
