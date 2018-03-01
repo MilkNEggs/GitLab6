@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lab6
 {
+    //Ca cest moi moi moi
     class WRQ
     {
 
