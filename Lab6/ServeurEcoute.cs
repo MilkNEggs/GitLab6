@@ -7,6 +7,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 
+
 namespace Lab6
 {
     class ServeurEcoute
@@ -19,7 +20,7 @@ namespace Lab6
         public void MaThreadEcoute()
         {
             //EndPoint PointLocal = new IPEndPoint(...);
-            //EndPoint PointDistant = new IPEndPoint(...);
+            //EndPoint PointDistant = new IPEndPoint(...);            
             
         }
 

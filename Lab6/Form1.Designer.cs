@@ -50,6 +50,7 @@
             this.btnArret.TabIndex = 1;
             this.btnArret.Text = "Arrêter";
             this.btnArret.UseVisualStyleBackColor = true;
+            this.btnArret.Click += new System.EventHandler(this.btnArret_Click);
             // 
             // Form1
             // 
@@ -60,6 +61,7 @@
             this.Controls.Add(this.btnDemarrer);
             this.Name = "Form1";
             this.Text = "Lab6 CGT et WL";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.ResumeLayout(false);
 
         }
