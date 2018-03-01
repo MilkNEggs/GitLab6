@@ -8,7 +8,7 @@ namespace Lab6
 {
     class RRQ
     {
-
+        //ça c'est moi
 
         public void SetPointDistant(EndPoint PointDistant)
         {
