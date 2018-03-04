@@ -27,6 +27,7 @@ namespace Lab6
             m_StrFichierWRQ = NomFichier;
         }
 
+        //Thread de WRQ
         public void MonThreadWRQ()
         {
             
