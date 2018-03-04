@@ -15,24 +15,26 @@ namespace Lab6
     {
         //Déclaration des variables memebres
         public bool m_Fin;
-        private Socket LeSocket;
-        private EndPoint PointLocal, PointDistant;
+        private Socket m_LeSocket;
+        private EndPoint m_PointLocal, m_PointDistant;
 
 
         //Méthode de la thread
         public void MaThreadEcoute()
         {
             //Déclaration des variables
-            PointLocal = new IPEndPoint(0, 69);
-            PointDistant = new IPEndPoint(0, 0);
+            m_PointLocal = new IPEndPoint(0, 69);
+            m_PointDistant = new IPEndPoint(0, 0);
             byte[] bTexte = new byte[516];
-            int NbrRecu;
+            byte[] bNomFich = new byte[100];
+            int NbrRecu, IndiceTableau = 0;
             Thread LeThread;
+            string NomFichier, sTexte;
 
             try
             {
-                LeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                LeSocket.Bind(PointLocal);
+                m_LeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                m_LeSocket.Bind(m_PointLocal);
             }
             catch (SocketException ex)
             {
@@ -43,25 +45,47 @@ namespace Lab6
             //Boucle de la thread
             while (!m_Fin)
             {
-                if (LeSocket.Available > 0)
+                if (m_LeSocket.Available > 0)
                 {
-                    NbrRecu = LeSocket.ReceiveFrom(bTexte, ref PointDistant);
+                    NbrRecu = m_LeSocket.ReceiveFrom(bTexte, ref m_PointDistant);
 
+                    sTexte = Encoding.ASCII.GetString(bTexte);          //Ajouter commande pour avoir seulement les octets non null
+
+                    //Pour obtenir le nom du fichier en bytes
+                    for(int i = 2; bTexte[i] != 00; i++)
+                    {
+                        bNomFich[IndiceTableau] = bTexte[i];
+                        IndiceTableau++;
+                    }
+                    NomFichier = Encoding.ASCII.GetString(bNomFich);    //Ajouter commande pour avoir seulement les octets non null
+
+                    //Si le code est 0001, soit un RRQ
                     if (bTexte[1] == 49)
                     {
                         RRQ rrq = new RRQ();
-                        LeThread = new Thread(new ThreadStart(rrq.MonThreadRRQ()));
+                        rrq.SetPointDistant(m_PointDistant);
+                        rrq.SetFichier(NomFichier);
+                        LeThread = new Thread(new ThreadStart(rrq.MonThreadRRQ()));         //Je ne comprends pas cette erreur
                     }
+
+                    //Sinon, si le code est 0002, soit un WRQ
                     else if (bTexte[1] == 2)
                     {
                         WRQ wrq = new WRQ();
-                        LeThread = new Thread(new ThreadStart(wrq.MonThreadWRQ()));
-                    }
-                }
-            }
+                        wrq.SetPointDistant(m_PointDistant);
+                        wrq.SetFichier(NomFichier);
+                        LeThread = new Thread(new ThreadStart(wrq.MonThreadWRQ()));             //Je ne comprends pas cette erreur
 
-            //EndPoint PointLocal = new IPEndPoint(...);
-            //EndPoint PointDistant = new IPEndPoint(...);            
+                        //Pour vérifier si la transmission est terminée         Pas sûr s'il va ici ou dans la classe WRQ
+                        if (NbrRecu < 516) 
+                        {
+                            m_Fin = true;
+                        }
+                    }
+
+                    
+                }
+            }            
 
         }
 
