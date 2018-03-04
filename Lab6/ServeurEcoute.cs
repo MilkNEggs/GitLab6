@@ -77,7 +77,7 @@ namespace Lab6
                         WRQ wrq = new WRQ();
                         wrq.SetPointDistant(m_PointDistant);
                         wrq.SetFichier(NomFichier);
-                        LeThread = new Thread(() => wrq.MonThreadWRQ());             //Pas certain de ce passage, trouvé sur stackoverflow
+                        LeThread = new Thread(() => wrq.MonThreadWRQ(m_LeSocket, bTexte, NomFichier));             //Pas certain de ce passage, trouvé sur stackoverflow
                         LeThread.Start();
                     }
                 }
