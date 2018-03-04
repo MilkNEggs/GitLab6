@@ -75,12 +75,6 @@ namespace Lab6
                         wrq.SetPointDistant(m_PointDistant);
                         wrq.SetFichier(NomFichier);
                         LeThread = new Thread(new ThreadStart(wrq.MonThreadWRQ()));             //Je ne comprends pas cette erreur
-
-                        //Pour vérifier si la transmission est terminée         Pas sûr s'il va ici ou dans la classe WRQ
-                        if (NbrRecu < 516) 
-                        {
-                            m_Fin = true;
-                        }
                     }
 
                     
