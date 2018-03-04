@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Sockets;
 using System.Net;
+using System.IO;
 
 namespace Lab6
 {
@@ -28,9 +29,28 @@ namespace Lab6
         }
 
         //Thread de WRQ
-        public void MonThreadWRQ()
+        public void MonThreadWRQ(Socket Serveur, byte[] Trame, string NomFichier)
         {
-            
+            //Déclaration des variables
+            bool Fin = false;
+            string Chemin = @"F:\LesFichiers\" + NomFichier;
+            FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
+            StreamWriter swWRQ = new StreamWriter(fsWRQ);
+
+            //Traitement 
+            while(!Fin)
+            {
+
+
+
+
+                //Vérifie si la dernière trame a été envoyée
+                if(Trame.Length < 516)
+                {
+                    Fin = false;
+                }
+            }
+
         }
 
     }

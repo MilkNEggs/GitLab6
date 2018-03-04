@@ -49,7 +49,7 @@ namespace Lab6
                 {
                     NbrRecu = m_LeSocket.ReceiveFrom(bTexte, ref m_PointDistant);
 
-                    sTexte = Encoding.ASCII.GetString(bTexte);          //Ajouter commande pour avoir seulement les octets non null
+                    sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);         
 
                     //Pour obtenir le nom du fichier en bytes
                     for(int i = 2; bTexte[i] != 00; i++)
@@ -57,7 +57,8 @@ namespace Lab6
                         bNomFich[IndiceTableau] = bTexte[i];
                         IndiceTableau++;
                     }
-                    NomFichier = Encoding.ASCII.GetString(bNomFich);    //Ajouter commande pour avoir seulement les octets non null
+                    //Conversion bytes en string
+                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, IndiceTableau);    
 
                     //Si le code est 0001, soit un RRQ
                     if (bTexte[1] == 49)
@@ -65,8 +66,10 @@ namespace Lab6
                         RRQ rrq = new RRQ();
                         rrq.SetPointDistant(m_PointDistant);
                         rrq.SetFichier(NomFichier);
-                        LeThread = new Thread(new ThreadStart(rrq.MonThreadRRQ()));         //Je ne comprends pas cette erreur
+                        LeThread = new Thread(() => rrq.MonThreadRRQ());         //Pas certain de ce passage, trouvé sur stackoverflow
+                        LeThread.Start();
                     }
+
 
                     //Sinon, si le code est 0002, soit un WRQ
                     else if (bTexte[1] == 2)
@@ -74,10 +77,9 @@ namespace Lab6
                         WRQ wrq = new WRQ();
                         wrq.SetPointDistant(m_PointDistant);
                         wrq.SetFichier(NomFichier);
-                        LeThread = new Thread(new ThreadStart(wrq.MonThreadWRQ()));             //Je ne comprends pas cette erreur
+                        LeThread = new Thread(() => wrq.MonThreadWRQ());             //Pas certain de ce passage, trouvé sur stackoverflow
+                        LeThread.Start();
                     }
-
-                    
                 }
             }            
 
