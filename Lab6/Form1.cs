@@ -33,9 +33,11 @@ namespace Lab6
         {
             //Désactiver le bouton démarrer
             btnDemarrer.Enabled = false;
+
             //Instancier l'objet t pour démarrer la thread «MaThreadEcoute» de la classe ServeurEcoute
             t = new Thread(new ThreadStart(serveur.MaThreadEcoute));
             serveur.m_Fin = false;
+
             //Démarrer la thread
             t.Start();
             btnArret.Enabled = true;
