@@ -32,6 +32,8 @@ namespace Lab6
         public void MonThreadWRQ(Socket Serveur, byte[] Trame, string NomFichier)
         {
             //Déclaration des variables
+            EndPoint PointLocalThread = new IPEndPoint(0, 0);
+            Socket SocketThread = new Socket();
             bool Fin = false;
             string Chemin = @"F:\LesFichiers\" + NomFichier, Donnees;
             FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
