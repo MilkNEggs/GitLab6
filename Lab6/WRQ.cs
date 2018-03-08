@@ -16,10 +16,6 @@ namespace Lab6
         EndPoint m_PointDistantWRQ;
         string m_StrFichierWRQ;
 
-        public WRQ()
-        {
-            
-        }
         //Méthode qui détermine le point distant
         public void SetPointDistant(EndPoint PointDistant)
         {
@@ -45,6 +41,9 @@ namespace Lab6
             byte[] bTrame = new byte[516];
             byte[] bEnvoie = new byte[25];
             int NoBloc = 1, NbrRecu;
+
+            //Bind du socket sur le point local
+            SocketThread.Bind(PointLocalThread);
 
             //Traitement 
             while(!Fin)
@@ -98,11 +97,10 @@ namespace Lab6
                     //Vérifie si la dernière trame a été envoyée
                     if (Trame.Length < 516)
                     {
-                        Fin = false;
+                        Fin = true;
                     }
                 }
             }
-
         }
 
     }
