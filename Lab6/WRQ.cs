@@ -42,6 +42,9 @@ namespace Lab6
             byte[] bEnvoie = new byte[25];
             int NoBloc = 1, NbrRecu;
 
+            //Bind du socket sur le point local
+            SocketThread.Bind(PointLocalThread);
+
             //Traitement 
             while(!Fin)
             {
@@ -67,21 +70,21 @@ namespace Lab6
                             //Si le numéro de bloc est plus élevé
                             if(bTrame[2] < NoBloc)
                             {
-                                bEnvoie[0] = 00;
-                                bEnvoie[1] = 05;
-                                bEnvoie[2] = 00;
+                                bEnvoie[0] = 0x00;
+                                bEnvoie[1] = 0x05;
+                                bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet précédent est manquant.");
-                                bEnvoie[bEnvoie.Length] = 00;
+                                bEnvoie[bEnvoie.Length] = 0x00;
                             }
 
                             //Si le numéro de bloc est inférieur
                             else if(bTrame[2] > NoBloc)
                             {
-                                bEnvoie[0] = 00;
-                                bEnvoie[1] = 05;
-                                bEnvoie[2] = 00;
+                                bEnvoie[0] = 0x00;
+                                bEnvoie[1] = 0x05;
+                                bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet a déjà été envoyé.");
-                                bEnvoie[bEnvoie.Length] = 00;
+                                bEnvoie[bEnvoie.Length] = 0x00;
                             }
                         }
                     }
@@ -90,11 +93,10 @@ namespace Lab6
                     //Vérifie si la dernière trame a été envoyée
                     if (Trame.Length < 516)
                     {
-                        Fin = false;
+                        Fin = true;
                     }
                 }
             }
-
         }
 
     }
