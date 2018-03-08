@@ -36,6 +36,8 @@ namespace Lab6
         public void MonThreadWRQ(Socket Serveur, byte[] Trame, string NomFichier)
         {
             //Déclaration des variables
+            EndPoint PointLocalThread = new IPEndPoint(0, 0);
+            Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             bool Fin = false;
             string Chemin = @"F:\LesFichiers\" + NomFichier, Donnees;
             FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -48,9 +50,9 @@ namespace Lab6
             while(!Fin)
             {
                 //Vérifie que une trame a été envoyée
-                if(Serveur.Available > 0)
+                if(SocketThread.Available > 0)
                 {
-                    NbrRecu = Serveur.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
+                    NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
 
                     if(bTrame[1] == 03)
                     {
