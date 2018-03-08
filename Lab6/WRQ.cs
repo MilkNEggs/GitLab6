@@ -62,8 +62,9 @@ namespace Lab6
                             Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu);
                             swWRQ.WriteLine(Donnees);
 
-                            //Envoie du ACK au client
-
+                            //Écriture de la trame du ACK 
+                            bEnvoie[0] = 0x00;
+                            bEnvoie[1] = 0x
                         }
                         else
                         {
@@ -87,6 +88,9 @@ namespace Lab6
                                 bEnvoie[bEnvoie.Length] = 0x00;
                             }
                         }
+
+                        //Envoie de la trame au client
+                        SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
                     }
 
 
