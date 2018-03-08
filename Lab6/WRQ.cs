@@ -94,6 +94,10 @@ namespace Lab6
                         SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
                     }
 
+                    if(NoBloc == 128)
+                    {
+                        NoBloc = 0;
+                    }
 
                     //Vérifie si la dernière trame a été envoyée
                     if (Trame.Length < 516)
