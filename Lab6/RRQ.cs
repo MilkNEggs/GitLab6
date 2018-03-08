@@ -14,6 +14,11 @@ namespace Lab6
         EndPoint m_PointDistantRRQ;
         string m_strFichierRRQ;
 
+          public RRQ()
+        {
+            
+        }
+
         public void SetPointDistant(EndPoint PointDistant)
         {
             m_PointDistantRRQ = PointDistant;
