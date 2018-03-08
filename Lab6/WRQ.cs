@@ -63,31 +63,35 @@ namespace Lab6
                             Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu);
                             swWRQ.WriteLine(Donnees);
 
-                            //Envoie du ACK au client
-
+                            //Écriture de la trame du ACK 
+                            bEnvoie[0] = 0x00;
+                            bEnvoie[1] = 0x
                         }
                         else
                         {
                             //Si le numéro de bloc est plus élevé
                             if(bTrame[2] < NoBloc)
                             {
-                                bEnvoie[0] = 00;
-                                bEnvoie[1] = 05;
-                                bEnvoie[2] = 00;
+                                bEnvoie[0] = 0x00;
+                                bEnvoie[1] = 0x05;
+                                bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet précédent est manquant.");
-                                bEnvoie[bEnvoie.Length] = 00;
+                                bEnvoie[bEnvoie.Length] = 0x00;
                             }
 
                             //Si le numéro de bloc est inférieur
                             else if(bTrame[2] > NoBloc)
                             {
-                                bEnvoie[0] = 00;
-                                bEnvoie[1] = 05;
-                                bEnvoie[2] = 00;
+                                bEnvoie[0] = 0x00;
+                                bEnvoie[1] = 0x05;
+                                bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet a déjà été envoyé.");
-                                bEnvoie[bEnvoie.Length] = 00;
+                                bEnvoie[bEnvoie.Length] = 0x00;
                             }
                         }
+
+                        //Envoie de la trame au client
+                        SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
                     }
 
 
