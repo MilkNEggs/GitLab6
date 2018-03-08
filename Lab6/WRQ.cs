@@ -16,6 +16,10 @@ namespace Lab6
         EndPoint m_PointDistantWRQ;
         string m_StrFichierWRQ;
 
+        public WRQ()
+        {
+            
+        }
         //Méthode qui détermine le point distant
         public void SetPointDistant(EndPoint PointDistant)
         {

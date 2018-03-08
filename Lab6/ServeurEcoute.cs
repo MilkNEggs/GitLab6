@@ -52,6 +52,7 @@ namespace Lab6
                     sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);         
 
                     //Pour obtenir le nom du fichier en bytes
+                    //2 PREMIER BYTES C'EST LA DEMANDE
                     for(int i = 2; bTexte[i] != 00; i++)
                     {
                         bNomFich[IndiceTableau] = bTexte[i];
@@ -61,7 +62,7 @@ namespace Lab6
                     NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, IndiceTableau);    
 
                     //Si le code est 0001, soit un RRQ
-                    if (bTexte[1] == 49)
+                    if (bTexte[1] == 0x01)
                     {
                         RRQ rrq = new RRQ();
                         rrq.SetPointDistant(m_PointDistant);
@@ -72,7 +73,7 @@ namespace Lab6
 
 
                     //Sinon, si le code est 0002, soit un WRQ
-                    else if (bTexte[1] == 2)
+                    else if (bTexte[1] == 0x02)
                     {
                         WRQ wrq = new WRQ();
                         wrq.SetPointDistant(m_PointDistant);
