@@ -14,7 +14,7 @@ namespace Lab6
         EndPoint m_PointDistantRRQ;
         string m_strFichierRRQ;
 
-          public RRQ()
+        public RRQ()
         {
             
         }
