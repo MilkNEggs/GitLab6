@@ -1,0 +1,4 @@
+C:\Users\Utilisateur\Desktop\Code\Réseau\GitLab6\Lab6\obj\Debug\Lab6.Form1.resources
+C:\Users\Utilisateur\Desktop\Code\Réseau\GitLab6\Lab6\obj\Debug\Lab6.Properties.Resources.resources
+C:\Users\Utilisateur\Desktop\Code\Réseau\GitLab6\Lab6\obj\Debug\Lab6.csproj.GenerateResource.Cache
+C:\Users\Utilisateur\Desktop\Code\Réseau\GitLab6\Lab6\obj\Debug\Lab6.csproj.CoreCompileInputs.cache
