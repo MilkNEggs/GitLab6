@@ -19,6 +19,7 @@ namespace Lab6
         //Méthode de la thread
         public void MaThreadEcoute()
         {
+            //ÇA MARCHE???            
             //Déclaration des variables
             Socket LeSocket;
             EndPoint PointLocal, PointDistant;
