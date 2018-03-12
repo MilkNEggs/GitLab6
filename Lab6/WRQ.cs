@@ -34,22 +34,22 @@ namespace Lab6
             //Déclaration des variables
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            bool Fin = false;
+            bool Fin = false, Lire;
             string Chemin = @"F:\LesFichiers\" + m_StrFichierWRQ, Donnees;
             FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
             StreamWriter swWRQ = new StreamWriter(fsWRQ);
             byte[] bTrame = new byte[516];
             byte[] bEnvoie = new byte[25];
-            int NoBloc = 1, NbrRecu;
+            int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
 
             //Bind du socket sur le point local
             SocketThread.Bind(PointLocalThread);
 
             //Traitement 
-            while(!Fin)
+            while(!Fin || ErreurACK == 3 || Arrets == 10)
             {
                 //Vérifie que une trame a été envoyée
-                if(SocketThread.Available > 0)
+                if(Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
                 {
                     NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
 
@@ -79,6 +79,7 @@ namespace Lab6
                                 bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet précédent est manquant.");
                                 bEnvoie[bEnvoie.Length] = 0x00;
+                                ErreurACK++;
                             }
 
                             //Si le numéro de bloc est inférieur
@@ -89,6 +90,7 @@ namespace Lab6
                                 bEnvoie[2] = 0x00;
                                 bEnvoie = Encoding.ASCII.GetBytes("Le paquet a déjà été envoyé.");
                                 bEnvoie[bEnvoie.Length] = 0x00;
+                                ErreurACK++;
                             }
                         }
 
@@ -101,11 +103,15 @@ namespace Lab6
                         NoBloc = 0;
                     }
 
-                    //Vérifie si la dernière trame a été envoyée
+                    //Vérifie si la dernière trame a été envoyée du client vers le serveur
                     if (bTrame.Length < 516)
                     {
                         Fin = true;
                     }
+                }
+                else
+                {
+                    Arrets++;
                 }
             }
         }
