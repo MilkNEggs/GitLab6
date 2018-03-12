@@ -29,13 +29,13 @@ namespace Lab6
         }
 
         //Thread de WRQ
-        public void MonThreadWRQ(Socket Serveur, byte[] Trame, string NomFichier)
+        public void MonThreadWRQ()
         {
             //Déclaration des variables
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             bool Fin = false;
-            string Chemin = @"F:\LesFichiers\" + NomFichier, Donnees;
+            string Chemin = @"F:\LesFichiers\" + m_StrFichierWRQ, Donnees;
             FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
             StreamWriter swWRQ = new StreamWriter(fsWRQ);
             byte[] bTrame = new byte[516];
@@ -65,6 +65,8 @@ namespace Lab6
                             //Écriture de la trame du ACK 
                             bEnvoie[0] = 0x00;
                             bEnvoie[1] = 0x04;
+                            bEnvoie[2] = 0x00;
+                            bEnvoie[3] = 0x00;
 
                         }
                         else
@@ -100,7 +102,7 @@ namespace Lab6
                     }
 
                     //Vérifie si la dernière trame a été envoyée
-                    if (Trame.Length < 516)
+                    if (bTrame.Length < 516)
                     {
                         Fin = true;
                     }
