@@ -7,6 +7,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Lab6
 {
@@ -48,14 +49,12 @@ namespace Lab6
             byte[] MessageErreur = new byte[30];
             StreamWriter swWRQ = null;
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
-
-<<<<<<< HEAD
+            
             //Bind du socket sur le point local
             SocketThread.Bind(PointLocalThread);
 
             //Traitement 
             while(!Fin || ErreurACK == 3 || Arrets == 10)
-=======
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
             if(File.Exists(Chemin))
             {
@@ -71,7 +70,6 @@ namespace Lab6
 
             //Si le nom de fichier spécifié est valide
             else
->>>>>>> 0333e4b236832d3089fefaed4ed707370942b30c
             {
                 //Création du fichier
                 try
@@ -103,7 +101,7 @@ namespace Lab6
                 SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
 
                 //Boucle d'écriture dans le fichier voulu
-                while (!Fin || ErreurACK < 3 || Arrets < 10)
+                while (!Fin && ErreurACK < 3 && Arrets < 10)
                 {
                     //Vérifie que une trame a été envoyée
                     if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
