@@ -84,7 +84,7 @@ namespace Lab6
                             MessageErreur = Encoding.ASCII.GetBytes("Opération TFTP illégale.");
                             Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
                             bErreur[33] = 0x00;
-                            LeSocket.SendTo(bErreur, PointDistant); //ça plante surement donc j'aime bien les string
+                            LeSocket.SendTo(bErreur, PointDistant); //ça plante surement donc j'aime bien les string, conversion byte[] --> string et string --> byte[]
                             break;
                     }
                 }
