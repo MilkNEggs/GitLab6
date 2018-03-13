@@ -39,10 +39,10 @@ namespace Lab6
         public void MonThreadRRQ()
         {
             //Déclaration des variables
-            EndPoint PointLocalThread = new IPEndPoint(0, 0);
+            EndPoint PointLocalThread = new IPEndPoint(0, 100);
             byte[] bTrame = new byte[516];
             int NbrRecu, Arrets = 0, ErreurACK = 0;
-            byte NoBloc = 0;
+            int NoBloc = 1;
             FileStream fsRRQ;
 
             //Bind du socket sur le point local
@@ -73,14 +73,14 @@ namespace Lab6
             //Boucle jusqu'à temps que tous les bloc sont 
             //envoyés ou que 3 ack ou que le transfert soit trop long
 
-            while(NbreBloc > NoBloc && ErreurACK < 3 && Arrets < 10 )
+            while(NbreBloc >= NoBloc && ErreurACK < 3 && Arrets < 10 )
             {
-                EnvoyerBloc(fsRRQ, NoBloc);
+                EnvoyerBloc(fsRRQ, (byte)NoBloc);
                 if (SocketThread.Poll(5000000, SelectMode.SelectRead))
                 {
                     NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
                     //Ne correcspond pas au bon ack
-                    if (!(bTrame[2] == (NoBloc & 0xFF00 >> 8)) && !(bTrame[3] == (NoBloc & 0xFF)))
+                    if (bTrame[6] != '0' || bTrame[7] != NoBloc+48)
                         ErreurACK++;
                     //Si ça marché
                     else
@@ -117,7 +117,8 @@ namespace Lab6
             bEnvoie[1] = 3;
             bEnvoie[2] = 0;
             bEnvoie[3] = NoBloc;
-            fsRRQ.Read(Donnees, 512 * NoBloc, 512);
+            fsRRQ.Seek(512 * (NoBloc - 1), SeekOrigin.Begin);
+            fsRRQ.Read(Donnees,0, 512);
             Buffer.BlockCopy(Donnees, 0, bEnvoie, 4, Donnees.Length);
             SocketThread.SendTo(bEnvoie, m_PointDistantRRQ);
         }

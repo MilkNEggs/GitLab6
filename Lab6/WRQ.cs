@@ -41,7 +41,7 @@ namespace Lab6
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             bool Fin = false, Lire;
-            string Chemin = @"F:\LesFichiers\" + m_StrFichierWRQ, Donnees;
+            string Chemin = m_StrFichierWRQ, Donnees;
             byte[] bTrame = new byte[516];
             byte[] bEnvoie = new byte[25];
             byte[] bNoBloc = new byte[2];
@@ -51,13 +51,6 @@ namespace Lab6
             StreamWriter swWRQ = null;
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
 
-            
-            //Bind du socket sur le point local
-            SocketThread.Bind(PointLocalThread);
-
-            //Traitement 
-            while(!Fin || ErreurACK == 3 || Arrets == 10)
-
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
             if(File.Exists(Chemin))
             {
@@ -66,8 +59,8 @@ namespace Lab6
                 bErreur[2] = 0x00;
                 bErreur[3] = 0x06;
                 MessageErreur = Encoding.ASCII.GetBytes("Le fichier existe déjà.");
-                Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
-                bErreur[33] = 0x00;
+                Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, MessageErreur.Length); //Donnees, 0, bEnvoie, 4, Donnees.Length
+                 bErreur[33] = 0x00;
                 SocketThread.SendTo(bErreur, m_PointDistantWRQ);
             }
 

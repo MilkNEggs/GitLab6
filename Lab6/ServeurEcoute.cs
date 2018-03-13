@@ -54,9 +54,9 @@ namespace Lab6
                     sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);
                     //Conversion bytes en string
                     i = 2;
-                    for (i = 2; bTexte[i] == 0; i++)
-                        bNomFich[i - 2] = bTexte[i];
-                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 2);
+                    for (i = 4; bTexte[i] != 0; i++)
+                        bNomFich[i - 4] = bTexte[i];
+                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 4);
 
                     switch (ValiderTrame(bTexte))
                     {
