@@ -7,6 +7,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Lab6
 {
@@ -43,10 +44,17 @@ namespace Lab6
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
 
             //Bind du socket sur le point local
-            SocketThread.Bind(PointLocalThread);
+            try
+            {
+                SocketThread.Bind(PointLocalThread);
+            }
+            catch (SocketException ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
 
             //Traitement 
-            while(!Fin || ErreurACK == 3 || Arrets == 10)
+            while(!Fin || ErreurACK < 3 || Arrets < 10)
             {
                 //Vérifie que une trame a été envoyée
                 if(Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
