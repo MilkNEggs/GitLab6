@@ -31,6 +31,8 @@ namespace Lab6
             int NbrRecu, i;
             Thread LeThread;
             string NomFichier, sTexte;
+
+            //Ouverture du socket
             try
             {
                 LeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
