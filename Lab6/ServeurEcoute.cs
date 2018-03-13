@@ -19,7 +19,6 @@ namespace Lab6
         //Méthode de la thread
         public void MaThreadEcoute()
         {
-            //ÇA MARCHE???            
             //Déclaration des variables
             Socket LeSocket;
             EndPoint PointLocal, PointDistant;
@@ -27,10 +26,11 @@ namespace Lab6
             PointDistant = new IPEndPoint(0, 0);
             byte[] bTexte = new byte[516];
             byte[] bNomFich = new byte[100];
-            int NbrRecu, IndiceTableau = 0;
+            byte[] bErreur = new byte[100];
+            byte[] MessageErreur = new byte[30];
+            int NbrRecu ,i;
             Thread LeThread;
             string NomFichier, sTexte;
-
             try
             {
                 LeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -49,59 +49,59 @@ namespace Lab6
                 {
                     NbrRecu = LeSocket.ReceiveFrom(bTexte, ref PointDistant);
 
-                    sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);         
+                    sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);
+                    //Conversion bytes en string
+                    i = 2;
+                    for (i = 2; bTexte[i] == 0; i++)
+                        bNomFich[i - 2] = bTexte[i];                    
+                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 2);
 
-                    if(!ValiderTrame(bTexte))
-                    {                        
-                        //Envoie un zéro
-                        LeSocket.SendTo(new byte[0], PointDistant);
-                    }
-                    else
-                    {                        
+                    switch (ValiderTrame(bTexte))
+                    {
                         //Pour obtenir le nom du fichier en bytes
-                        //2 PREMIER BYTES C'EST LA DEMANDE
-                        for(int i = 2; bTexte[i] != 0x00; i++)
-                        {
-                            bNomFich[IndiceTableau] = bTexte[i];
-                            IndiceTableau++;
-                        }
-                        //Conversion bytes en string
-                        NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, IndiceTableau);    
-
                         //Si le code est 0001, soit un RRQ
-                        if (bTexte[1] == 0x01)
-                        {
+                        case 1:
                             RRQ rrq = new RRQ();
                             rrq.SetPointDistant(PointDistant);
                             rrq.SetFichier(NomFichier);
                             LeThread = new Thread(new ThreadStart(rrq.MonThreadRRQ));
-                            // LeThread = new Thread(() => rrq.MonThreadRRQ();         //Pas certain de ce passage, trouvé sur stackoverflow
                             LeThread.Start();
-                        }
-
-
+                            break;
                         //Sinon, si le code est 0002, soit un WRQ
-                        else if (bTexte[1] == 0x02)
-                        {
+                        case 2:
                             WRQ wrq = new WRQ();
                             wrq.SetPointDistant(PointDistant);
                             wrq.SetFichier(NomFichier);
                             LeThread = new Thread(new ThreadStart(wrq.MonThreadWRQ));
-                            // LeThread = new Thread(() => wrq.MonThreadWRQ(LeSocket, bTexte, NomFichier));             //Pas certain de ce passage, trouvé sur stackoverflow
                             LeThread.Start();
-                        }
+                            break;
+                        //Construit un message d'erreur
+                        case 0:                            
+                            bErreur[0] = 0x00;
+                            bErreur[1] = 0x05;
+                            bErreur[2] = 0x00;
+                            bErreur[3] = 0x04;
+                            MessageErreur = Encoding.ASCII.GetBytes("Opération TFTP illégale.");
+                            Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
+                            bErreur[33] = 0x00;
+                            LeSocket.SendTo(bErreur, PointDistant); //ça plante surement donc j'aime bien les string
+                            break;
                     }
                 }
             }            
-
         }
 
 
         //Méthode qui valide la trame
-        private bool ValiderTrame(byte[] bTrame)
+        private int ValiderTrame(byte[] bTrame)
         {
             //Validation au complet de la trame 
-            return false;
+            if (bTrame[0] == 0 && bTrame[1] == 1)
+                return 1;
+            else if (bTrame[0] == 0 && bTrame[1] == 2)
+                return 2;
+            else
+                return 0;
         }
 
     }
