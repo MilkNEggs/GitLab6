@@ -8,10 +8,6 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Windows.Forms;
-<<<<<<< HEAD
-
-=======
->>>>>>> 790b0d62f0fe5e71377fef13816c73812048a237
 
 namespace Lab6
 {
@@ -54,20 +50,14 @@ namespace Lab6
             FileStream fsWRQ = null;
             StreamWriter swWRQ = null;
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
-<<<<<<< HEAD
 
             
-=======
->>>>>>> 790b0d62f0fe5e71377fef13816c73812048a237
             //Bind du socket sur le point local
             SocketThread.Bind(PointLocalThread);
 
             //Traitement 
             while(!Fin || ErreurACK == 3 || Arrets == 10)
-<<<<<<< HEAD
 
-=======
->>>>>>> 790b0d62f0fe5e71377fef13816c73812048a237
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
             if(File.Exists(Chemin))
             {

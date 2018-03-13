@@ -41,7 +41,6 @@ namespace Lab6
             //Déclaration des variables
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             byte[] bTrame = new byte[516];
-            bool Fin = false;
             int NbrRecu, Arrets = 0, ErreurACK = 0;
             byte NoBloc = 0;
             FileStream fsRRQ;
