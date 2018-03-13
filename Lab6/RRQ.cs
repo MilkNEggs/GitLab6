@@ -17,6 +17,7 @@ namespace Lab6
 
         EndPoint m_PointDistantRRQ;
         string m_strFichierRRQ;
+        Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
         public RRQ()
         {
@@ -39,13 +40,10 @@ namespace Lab6
         {
             //Déclaration des variables
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
-            Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             byte[] bTrame = new byte[516];
-            byte[] bEnvoie = new byte[516];
             bool Fin = false;
             int NbrRecu, Arrets = 0, ErreurACK = 0;
             byte NoBloc = 0;
-            byte[] Donnees = new byte[512];
             FileStream fsRRQ;
 
             //Bind du socket sur le point local
@@ -59,40 +57,70 @@ namespace Lab6
             {
                 MessageBox.Show(Erreur.ToString());
                 EnvoieErreur(1);
+                SocketThread.Close();
                 return;
             }
+            
+
             //Traitement 
+            //Détermine le nombre de blocs à envoyés
+            long LongueurFichier = fsRRQ.Length;
+            int NbreBloc = (int)LongueurFichier / 512;
+            if ((int)LongueurFichier % 512 != 0)
+            {
+                NbreBloc++;
+            }
+
+            //Boucle jusqu'à temps que tous les bloc sont 
+            //envoyés ou que 3 ack ou que le transfert soit trop long
+
+            while(NbreBloc > NoBloc && ErreurACK < 3 && Arrets < 10 )
+            {
+                EnvoyerBloc(fsRRQ, NoBloc);
+                if (SocketThread.Poll(5000000, SelectMode.SelectRead))
+                {
+                    NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
+                    //Ne correcspond pas au bon ack
+                    if (!(bTrame[2] == (NoBloc & 0xFF00 >> 8)) && !(bTrame[3] == (NoBloc & 0xFF)))
+                        ErreurACK++;
+                    //Si ça marché
+                    else
+                        NoBloc++;
+                }
+                //Le temps de l'envoie a été trop long
+                else
+                    Arrets++;
+            }
+            //Termine le socket et le filestream
+            fsRRQ.Close();
+            SocketThread.Close();
+        }
+        private void EnvoieErreur(byte NoErreur)
+        {
+            //Envoie une erreur fichier inconnu
+            byte[] bErreur = new byte[516];
+            bErreur[0] = 0;
+            bErreur[1] = 5;
+            bErreur[2] = 0;
+            bErreur[3] = NoErreur;
+            byte[] MessageErreur = new byte[30];
+            MessageErreur = Encoding.ASCII.GetBytes("Fichier inconnu");
+            Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, 30);
+            SocketThread.SendTo(bErreur, m_PointDistantRRQ);
+        }
+
+        private void EnvoyerBloc(FileStream fsRRQ, byte NoBloc)
+        {
+            byte[] bEnvoie = new byte[516];
+            byte[] Donnees = new byte[512];
+            //Envoie un bloc de données selon le no. de bloc
             bEnvoie[0] = 0;
             bEnvoie[1] = 3;
             bEnvoie[2] = 0;
             bEnvoie[3] = NoBloc;
-            fsRRQ.Read(Donnees, 0, 512);
-
+            fsRRQ.Read(Donnees, 512 * NoBloc, 512);
+            Buffer.BlockCopy(Donnees, 0, bEnvoie, 4, Donnees.Length);
             SocketThread.SendTo(bEnvoie, m_PointDistantRRQ);
-
-            while (!Fin || ErreurACK < 3 || Arrets < 10)
-            {
-                //Vérifie que une trame a été envoyée
-                if (SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
-                {
-
-                }
-                else
-                {
-                    Arrets++;
-                }
-                //Si le numéro de bloc est valide
-                //Écritue dans le fichier
-                //Si le numéro de bloc est plus élevé
-                //Si le numéro de bloc est inférieur
-                //Envoie de la trame au client
-                //Vérifie si la dernière trame a été envoyée du client vers le serveur
-            }
-
-        }
-        private void EnvoieErreur(int NoErreur)
-        {
-            //Envoie un erreur fichier inconnu
         }
     }
 }
