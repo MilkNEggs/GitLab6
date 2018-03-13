@@ -8,7 +8,10 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using System.Windows.Forms;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6f2e91b1379cbeb37b1c48a6de1a3c7450a9f894
 
 namespace Lab6
 {
@@ -48,14 +51,23 @@ namespace Lab6
             byte[] bNoBloc = new byte[2];
             byte[] bErreur = new byte[100];
             byte[] MessageErreur = new byte[30];
+            FileStream fsWRQ = null;
             StreamWriter swWRQ = null;
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 6f2e91b1379cbeb37b1c48a6de1a3c7450a9f894
             //Bind du socket sur le point local
             SocketThread.Bind(PointLocalThread);
 
             //Traitement 
+<<<<<<< HEAD
             while(!Fin || ErreurACK == 3 || Arrets == 10)
+=======
+
+>>>>>>> 6f2e91b1379cbeb37b1c48a6de1a3c7450a9f894
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
             if(File.Exists(Chemin))
             {
@@ -75,7 +87,7 @@ namespace Lab6
                 //Création du fichier
                 try
                 {
-                    FileStream fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
+                    fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
                     swWRQ = new StreamWriter(fsWRQ);
                 }
                 catch (Exception ex)
@@ -102,7 +114,7 @@ namespace Lab6
                 SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
 
                 //Boucle d'écriture dans le fichier voulu
-                while (!Fin || ErreurACK < 3 || Arrets < 10)
+                while (!Fin && ErreurACK < 3 && Arrets < 10)
                 {
                     //Vérifie que une trame a été envoyée
                     if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
@@ -179,6 +191,11 @@ namespace Lab6
                     }
                 }
             }
+
+            //Fermeture du socket et filestream
+            swWRQ.Close();
+            fsWRQ.Close();
+            SocketThread.Close();
             
         }
 
