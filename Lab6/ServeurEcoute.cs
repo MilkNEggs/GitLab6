@@ -28,7 +28,7 @@ namespace Lab6
             byte[] bNomFich = new byte[100];
             byte[] bErreur = new byte[100];
             byte[] MessageErreur = new byte[30];
-            int NbrRecu ,i;
+            int NbrRecu, i;
             Thread LeThread;
             string NomFichier, sTexte;
             try
@@ -53,7 +53,7 @@ namespace Lab6
                     //Conversion bytes en string
                     i = 2;
                     for (i = 2; bTexte[i] == 0; i++)
-                        bNomFich[i - 2] = bTexte[i];                    
+                        bNomFich[i - 2] = bTexte[i];
                     NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 2);
 
                     switch (ValiderTrame(bTexte))
@@ -76,7 +76,7 @@ namespace Lab6
                             LeThread.Start();
                             break;
                         //Construit un message d'erreur
-                        case 0:                            
+                        case 0:
                             bErreur[0] = 0x00;
                             bErreur[1] = 0x05;
                             bErreur[2] = 0x00;
@@ -88,7 +88,8 @@ namespace Lab6
                             break;
                     }
                 }
-            }            
+            }
+            LeSocket.Close();
         }
 
 

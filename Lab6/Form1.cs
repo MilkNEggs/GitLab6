@@ -46,7 +46,8 @@ namespace Lab6
         private void btnArret_Click(object sender, EventArgs e)
         {
             serveur.m_Fin = true;
-            //Application.Exit();
+            btnDemarrer.Enabled = true;
+            btnArret.Enabled = false;
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
