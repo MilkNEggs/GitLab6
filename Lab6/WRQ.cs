@@ -50,46 +50,36 @@ namespace Lab6
             byte[] MessageErreur = new byte[30];
             FileStream fsWRQ = null;
             StreamWriter swWRQ = null;
-            int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0;
+            int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0, NoBloc2 = 0;
 
-            //Création du fichier
-            try
-            {
-                fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
-                swWRQ = new StreamWriter(fsWRQ);
-            }
-            catch (Exception ex)
-            {
-                //MessageBox.Show(ex.ToString());
-                return;
-            }
+            
 
-            //Bind du socket sur le point local
-            try
-            {
-                SocketThread.Bind(PointLocalThread);
-            }
-            catch (SocketException ex)
-            {
-                //MessageBox.Show(ex.ToString());
-            }
 
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
-            if (File.Exists(Chemin))
+            if (!File.Exists(Chemin))
             {
-                bErreur[0] = 0;
-                bErreur[1] = 5;
-                bErreur[2] = 0;
-                bErreur[3] = 6;
-                MessageErreur = Encoding.ASCII.GetBytes("Le fichier existe deja.");
-                Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, MessageErreur.Length); //Donnees, 0, bEnvoie, 4, Donnees.Length
-                 bErreur[33] = 0;
-                SocketThread.SendTo(bErreur, m_PointDistantWRQ);
-            }
+                //Création du fichier
+                try
+                {
+                    fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
+                    swWRQ = new StreamWriter(fsWRQ);
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.ToString());
+                    return;
+                }
 
-            //Si le nom de fichier spécifié est valide
-            else
-            {
+                //Bind du socket sur le point local
+                try
+                {
+                    SocketThread.Bind(PointLocalThread);
+                }
+                catch (SocketException ex)
+                {
+                    //MessageBox.Show(ex.ToString());
+                }
+
                 //Écriture de la trame du premier ACK et envoie
                 bEnvoie[0] = 0;
                 bEnvoie[1] = 4;
@@ -101,60 +91,45 @@ namespace Lab6
                 while (!Fin && ErreurACK < 3 && Arrets < 10)
                 {
                     //Vérifie que une trame a été envoyée
-                    if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) 
+                    if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead))
                     {
                         NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
 
-                        if (bTrame[3] == '3')
+                        if (bTrame[1] == 3)
                         {
                             //Si le numéro de bloc est valide
-                            if ((bTrame[6] == ((NoBloc & 0xFF00)) + 48) && (bTrame[7] == ((NoBloc & 0xFF)) + 48))
+                            if (bTrame[2] == (NoBloc2 & 0xFF00) && bTrame[3] == (NoBloc & 0xFF))
                             {
-                                //Écritue dans le fichier
-                                Donnees = Encoding.ASCII.GetString(bTrame).Substring(8, NbrRecu - 8);
-                                swWRQ.WriteLine(Donnees);
-
+                                
                                 //Écriture de la trame du ACK 
                                 bEnvoie[0] = 0;
                                 bEnvoie[1] = 4;
-                                bNoBloc = NoBlocHexa(NoBloc);
-                                bEnvoie[2] = bNoBloc[0];
-                                bEnvoie[3] = bNoBloc[1];
+                                //bNoBloc = NoBlocHexa(NoBloc);
+                                bEnvoie[2] = (byte)NoBloc2;
+                                bEnvoie[3] = (byte)NoBloc;
 
-                                //Envoie de la trame au client, que ce soit ACK ou Erreur
+                                //Écritue dans le fichier
+                                Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu - 4);
+                                swWRQ.WriteLine(Donnees);
+
                                 SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
 
+                                NoBloc++;
+
+                                
                             }
                             else
                             {
-                                //////Si le numéro de bloc envoyé est plus petit que le numéro de bloc attendu
-                                ////if ((bTrame[6] < ((NoBloc & 0xFF00)) + 48) || (bTrame[7] == ((NoBloc & 0xFF)) + 48) && (bTrame[7] < (NoBloc & 0xFF) + 48))
-                                ////{
-                                ////    MessageErreur = Encoding.ASCII.GetBytes("Le paquet précédent n'a pas été reçu.");
-                                ////}
-
-                                //////Si le numéro de bloc envoyé est plus grand que le numéro de bloc attendu
-                                ////else if ((bTrame[6] > ((NoBloc & 0xFF00)) + 48) || (bTrame[6] == ((NoBloc & 0xFF)) + 48) && (bTrame[7] > (NoBloc & 0xFF) + 48))
-                                ////{
-                                ////    MessageErreur = Encoding.ASCII.GetBytes("Le paquet a déjà été reçu.");
-                                ////}
-
-                                //bErreur[0] = 0;
-                                //bErreur[1] = 5;
-                                //bErreur[2] = 0;
-                                //bErreur[3] = 7;
-                                //Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
-                                //bErreur[33] = 0;
-                                //SocketThread.SendTo(bErreur, m_PointDistantWRQ);
                                 ErreurACK++;
                             }
 
                         }
 
                         //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
-                        if (NoBloc == 65535)
+                        if (NoBloc == 128)
                         {
-                            NoBloc = 1;
+                            NoBloc2++;
+                            NoBloc = 0;
                         }
 
                         //Vérifie si la dernière trame a été envoyée du client vers le serveur
@@ -168,13 +143,38 @@ namespace Lab6
                         Arrets++;
                     }
                 }
+
+                try
+                {
+                    swWRQ.Close();
+                    fsWRQ.Close();
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            
+
+            
+
+            //Si le nom de fichier spécifié est non valide
+            else
+            {
+                bErreur[0] = 0;
+                bErreur[1] = 5;
+                bErreur[2] = 0;
+                bErreur[3] = 6;
+                MessageErreur = Encoding.ASCII.GetBytes("Le fichier existe deja.");
+                Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, MessageErreur.Length); //Donnees, 0, bEnvoie, 4, Donnees.Length
+                bErreur[33] = 0;
+                SocketThread.SendTo(bErreur, m_PointDistantWRQ);
             }
 
             //Fermeture du socket et filestream
             try
             {
-                swWRQ.Close();
-                fsWRQ.Close();
                 SocketThread.Close();
             }
             catch (SocketException ex)
