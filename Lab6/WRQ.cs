@@ -54,13 +54,13 @@ namespace Lab6
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
             if(File.Exists(Chemin))
             {
-                bErreur[0] = 0x00;
-                bErreur[1] = 0x05;
-                bErreur[2] = 0x00;
-                bErreur[3] = 0x06;
+                bErreur[0] = 0;
+                bErreur[1] = 5;
+                bErreur[2] = 0;
+                bErreur[3] = 6;
                 MessageErreur = Encoding.ASCII.GetBytes("Le fichier existe déjà.");
                 Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, MessageErreur.Length); //Donnees, 0, bEnvoie, 4, Donnees.Length
-                 bErreur[33] = 0x00;
+                 bErreur[33] = 0;
                 SocketThread.SendTo(bErreur, m_PointDistantWRQ);
             }
 
@@ -90,21 +90,21 @@ namespace Lab6
                 }
 
                 //Écriture de la trame du premier ACK et envoie
-                bEnvoie[0] = 0x00;
-                bEnvoie[1] = 0x04;
-                bEnvoie[2] = 0x00;
-                bEnvoie[3] = 0x00;
+                bEnvoie[0] = 0;
+                bEnvoie[1] = 4;
+                bEnvoie[2] = 0;
+                bEnvoie[3] = 0;
                 SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
 
                 //Boucle d'écriture dans le fichier voulu
                 while (!Fin && ErreurACK < 3 && Arrets < 10)
                 {
                     //Vérifie que une trame a été envoyée
-                    if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) //(SocketThread.Available > 0)
+                    if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead)) 
                     {
                         NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
 
-                        if (bTrame[1] == 03)
+                        if (bTrame[1] == 3)
                         {
                             //Si le numéro de bloc est valide
                             if ((bTrame[2] == (NoBloc & 0xFF00 >> 8)) && (bTrame[3] == (NoBloc & 0xFF)))
@@ -114,8 +114,8 @@ namespace Lab6
                                 swWRQ.WriteLine(Donnees);
 
                                 //Écriture de la trame du ACK 
-                                bEnvoie[0] = 0x00;
-                                bEnvoie[1] = 0x04;
+                                bEnvoie[0] = 0;
+                                bEnvoie[1] = 4;
                                 bNoBloc = NoBlocHexa(NoBloc);
                                 bEnvoie[2] = bNoBloc[0];
                                 bEnvoie[3] = bNoBloc[1];
@@ -132,7 +132,7 @@ namespace Lab6
                                     bErreur[3] = 0x07;
                                     MessageErreur = Encoding.ASCII.GetBytes("Le paquet précédent n'a pas été reçu.");
                                     Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
-                                    bErreur[33] = 0x00;
+                                    bErreur[33] = 0;
                                     SocketThread.SendTo(bErreur, m_PointDistantWRQ);
                                     ErreurACK++;
                                 }
@@ -140,13 +140,13 @@ namespace Lab6
                                 //Si le numéro de bloc envoyé est plus grand que le numéro de bloc attendu
                                 else if (bTrame[2] > (NoBloc & 0xFF00 >> 8) || (bTrame[2] == (NoBloc & 0xFF00 >> 8)) && (bTrame[3] > (NoBloc & 0xFF)))
                                 {
-                                    bErreur[0] = 0x00;
-                                    bErreur[1] = 0x05;
-                                    bErreur[2] = 0x00;
-                                    bErreur[3] = 0x08;
+                                    bErreur[0] = 0;
+                                    bErreur[1] = 5;
+                                    bErreur[2] = 0;
+                                    bErreur[3] = 8;
                                     MessageErreur = Encoding.ASCII.GetBytes("Le paquet a déjà été reçuS.");
                                     Buffer.BlockCopy(MessageErreur, 4, bErreur, bErreur.Length, 100);
-                                    bErreur[33] = 0x00;
+                                    bErreur[33] = 0;
                                     SocketThread.SendTo(bErreur, m_PointDistantWRQ);
                                     ErreurACK++;
                                 }
