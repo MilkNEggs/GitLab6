@@ -184,37 +184,5 @@ namespace Lab6
             }
             
         }
-
-        //Conversion du numéro de bloc en hexadécimal
-        private byte[] NoBlocHexa(int NoBloc)
-        {
-            //Déclaration des variables
-            byte[] NoHexa = new byte[2];
-            byte[] bTampon = new byte[1];
-            int Indice = 1, Result;
-            string[] LettreHexa = new string[] { "A", "B", "C", "D", "E", "F" };
-
-
-            //Traitement
-            while (NoBloc > 0)
-            {
-                Result = (byte)(NoBloc % 16);
-                if (Result >= 10)
-                {
-                    bTampon = Encoding.ASCII.GetBytes(LettreHexa[Result - 10]);
-                    NoHexa[Indice] = bTampon[0];
-                }
-                else
-                {
-                    NoHexa[Indice] = (byte)Result;
-                }
-                NoBloc = NoBloc / 16;
-                Indice--;
-            }
-
-            //Retour
-            return NoHexa;
-        }
-
     }
 }

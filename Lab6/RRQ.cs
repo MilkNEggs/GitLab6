@@ -81,7 +81,7 @@ namespace Lab6
                 {
                     NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
                     //Ne correcspond pas au bon ack
-                    if (bTrame[2] != (NoBloc & 0xFF00) || bTrame[3] != (NoBloc & 0xFF))
+                    if (bTrame[2] != (NoBloc2 & 0xFF00) || bTrame[3] != (NoBloc & 0xFF))
                         ErreurACK++;
                     //Si ça marché
                     else
