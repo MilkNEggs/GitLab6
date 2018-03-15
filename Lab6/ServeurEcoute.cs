@@ -52,11 +52,12 @@ namespace Lab6
                     NbrRecu = LeSocket.ReceiveFrom(bTexte, ref PointDistant);
 
                     sTexte = Encoding.ASCII.GetString(bTexte).Substring(0, NbrRecu);
+
                     //Conversion bytes en string
-                    i = 2;
-                    for (i = 4; bTexte[i] != 0; i++)
-                        bNomFich[i - 4] = bTexte[i];
-                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 4);
+                    for (i = 2; bTexte[i] != 0; i++)
+                        bNomFich[i - 2] = bTexte[i];
+                    NomFichier = Encoding.ASCII.GetString(bNomFich).Substring(0, i - 2);
+                  
 
                     switch (ValiderTrame(bTexte))
                     {
@@ -86,7 +87,7 @@ namespace Lab6
                             MessageErreur = Encoding.ASCII.GetBytes("Opération TFTP illégale.");
                             Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, 1);
                             bErreur[33] = 0x00;
-                            LeSocket.SendTo(bErreur, PointDistant); //ça plante surement donc j'aime bien les string, conversion byte[] --> string et string --> byte[]
+                            LeSocket.SendTo(bErreur, PointDistant); 
                             break;
                     }
                 }
@@ -99,9 +100,9 @@ namespace Lab6
         private int ValiderTrame(byte[] bTrame)
         {
             //Validation au complet de la trame 
-            if (bTrame[2] == '0' && bTrame[3] == '1')
+            if (bTrame[0] == 0 && bTrame[1] == 1 && bTrame[2] != 0)
                 return 1;
-            else if (bTrame[2] == '0' && bTrame[3] == '2')
+            else if (bTrame[0] == 0 && bTrame[1] == 2 && bTrame[2] != 0)
                 return 2;
             else
                 return 0;

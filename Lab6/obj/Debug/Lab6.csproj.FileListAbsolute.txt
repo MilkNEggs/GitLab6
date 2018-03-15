@@ -21,3 +21,4 @@ C:\Users\Admin\Desktop\Code\GitLab6\Lab6\obj\Debug\Lab6.csproj.GenerateResource.
 C:\Users\Admin\Desktop\Code\GitLab6\Lab6\obj\Debug\Lab6.csproj.CoreCompileInputs.cache
 C:\Users\Admin\Desktop\Code\GitLab6\Lab6\obj\Debug\Lab6.exe
 C:\Users\Admin\Desktop\Code\GitLab6\Lab6\obj\Debug\Lab6.pdb
+C:\Labs\Lab6\Lab6\obj\Debug\Lab6.csprojResolveAssemblyReference.cache

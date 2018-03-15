@@ -18,10 +18,11 @@ namespace Lab6
         EndPoint m_PointDistantRRQ;
         string m_strFichierRRQ;
         Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        long m_LongueurFichier;
 
         public RRQ()
         {
-            
+            m_LongueurFichier = 0;
         }
         //Méthode qui détermine le point distant
 
@@ -39,13 +40,13 @@ namespace Lab6
         public void MonThreadRRQ()
         {
             //Déclaration des variables
-            EndPoint PointLocalThread = new IPEndPoint(0, 100);
+            EndPoint PointLocalThread = new IPEndPoint(0, 0);
             byte[] bTrame = new byte[516];
             int NbrRecu, Arrets = 0, ErreurACK = 0;
             int NoBloc = 1;
             FileStream fsRRQ;
 
-            //Bind du socket sur le point local
+            //Bind du socket sur le point local et ouverture du filestream
             try
             {
                 SocketThread.Bind(PointLocalThread);
@@ -54,7 +55,7 @@ namespace Lab6
             }
             catch (Exception Erreur)
             {
-                MessageBox.Show(Erreur.ToString());
+            //    MessageBox.Show(Erreur.ToString());
                 EnvoieErreur(1);
                 SocketThread.Close();
                 return;
@@ -63,9 +64,9 @@ namespace Lab6
 
             //Traitement 
             //Détermine le nombre de blocs à envoyés
-            long LongueurFichier = fsRRQ.Length;
-            int NbreBloc = (int)LongueurFichier / 512;
-            if ((int)LongueurFichier % 512 != 0)
+            m_LongueurFichier = fsRRQ.Length;
+            int NbreBloc = (int)m_LongueurFichier / 512;
+            if ((int)m_LongueurFichier % 512 != 0)
             {
                 NbreBloc++;
             }
@@ -80,7 +81,7 @@ namespace Lab6
                 {
                     NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
                     //Ne correcspond pas au bon ack
-                    if (bTrame[6] != '0' || bTrame[7] != NoBloc+48)
+                    if (bTrame[2] != (NoBloc & 0xFF00) || bTrame[3] != (NoBloc & 0xFF))
                         ErreurACK++;
                     //Si ça marché
                     else
@@ -104,21 +105,32 @@ namespace Lab6
             bErreur[3] = NoErreur;
             byte[] MessageErreur = new byte[30];
             MessageErreur = Encoding.ASCII.GetBytes("Fichier inconnu");
-            Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, 30);
+            Buffer.BlockCopy(MessageErreur, 0, bErreur, 4, MessageErreur.Length);
             SocketThread.SendTo(bErreur, m_PointDistantRRQ);
         }
 
         private void EnvoyerBloc(FileStream fsRRQ, byte NoBloc)
         {
-            byte[] bEnvoie = new byte[516];
-            byte[] Donnees = new byte[512];
+            byte[] Donnees;
+
+            if (NoBloc == (m_LongueurFichier / 512) + 1)
+            {
+                Donnees = new byte[m_LongueurFichier % 512];
+
+            }
+            else
+            {
+                Donnees = new byte[512];
+
+            }
+            byte[] bEnvoie = new byte[4 + Donnees.Length];
             //Envoie un bloc de données selon le no. de bloc
             bEnvoie[0] = 0;
             bEnvoie[1] = 3;
             bEnvoie[2] = 0;
             bEnvoie[3] = NoBloc;
             fsRRQ.Seek(512 * (NoBloc - 1), SeekOrigin.Begin);
-            fsRRQ.Read(Donnees,0, 512);
+            fsRRQ.Read(Donnees,0, Donnees.Length);
             Buffer.BlockCopy(Donnees, 0, bEnvoie, 4, Donnees.Length);
             SocketThread.SendTo(bEnvoie, m_PointDistantRRQ);
         }
