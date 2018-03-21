@@ -126,10 +126,15 @@ namespace Lab6
                         }
 
                         //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
-                        if (NoBloc == 128)
+                        if (NoBloc == 255)
                         {
                             NoBloc2++;
                             NoBloc = 0;
+                            if(NoBloc2 == 255)
+                            {
+                                NoBloc = 0;
+                                NoBloc2 = 0;
+                            }
                         }
 
                         //Vérifie si la dernière trame a été envoyée du client vers le serveur
@@ -156,9 +161,6 @@ namespace Lab6
             }
 
             
-
-            
-
             //Si le nom de fichier spécifié est non valide
             else
             {

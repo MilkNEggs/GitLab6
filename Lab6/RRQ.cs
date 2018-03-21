@@ -87,10 +87,15 @@ namespace Lab6
                     else
                     {
                         NoBloc++;
-                        if(NoBloc == 128)
+                        if (NoBloc == 255)
                         {
                             NoBloc = 0;
                             NoBloc2++;
+                            if (NoBloc2 == 255)
+                            {
+                                NoBloc = 0;
+                                NoBloc2 = 0;
+                            }
                         }
                     }
 
