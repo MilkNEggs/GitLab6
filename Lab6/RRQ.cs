@@ -55,7 +55,7 @@ namespace Lab6
             }
             catch (Exception Erreur)
             {
-            //    MessageBox.Show(Erreur.ToString());
+                MessageBox.Show(Erreur.ToString());
                 EnvoieErreur(1);
                 SocketThread.Close();
                 return;
@@ -74,38 +74,48 @@ namespace Lab6
             //Boucle jusqu'à temps que tous les bloc sont 
             //envoyés ou que 3 ack ou que le transfert soit trop long
 
-            while(NbreBloc >= (NoBloc2*256+NoBloc) && ErreurACK < 3 && Arrets < 10 )
+            try
             {
-                EnvoyerBloc(fsRRQ, (byte)NoBloc, (byte)NoBloc2);
-                if (SocketThread.Poll(5000000, SelectMode.SelectRead))
+                while (NbreBloc >= (NoBloc2 * 256 + NoBloc) && ErreurACK < 3 && Arrets < 10)
                 {
-                    NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
-                    //Ne correcspond pas au bon ack
-                    if (bTrame[2] != (NoBloc2 & 0xFF) || bTrame[3] != (NoBloc & 0xFF))
-                        ErreurACK++;
-                    //Si ça marché
-                    else
+                    EnvoyerBloc(fsRRQ, (byte)NoBloc, (byte)NoBloc2);
+                    if (SocketThread.Poll(5000000, SelectMode.SelectRead))
                     {
-                        NoBloc++;
-                        if (NoBloc == 256)
+                        NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
+                        //Ne correcspond pas au bon ack
+                        if (bTrame[2] != (NoBloc2 & 0xFF) || bTrame[3] != (NoBloc & 0xFF))
+                            ErreurACK++;
+                        //Si ça marché
+                        else
                         {
-                            NoBloc = 0;
-                            NoBloc2++;
-                            if (NoBloc2 == 256)
+                            NoBloc++;
+                            if (NoBloc == 256)
                             {
-                                NoBloc2 = 0;
+                                NoBloc = 0;
+                                NoBloc2++;
+                                if (NoBloc2 == 256)
+                                {
+                                    NoBloc2 = 0;
+                                }
                             }
                         }
                     }
-
+                    //Le temps de l'envoie a été trop long
+                    else
+                        Arrets++;
                 }
-                //Le temps de l'envoie a été trop long
-                else
-                    Arrets++;
             }
-            //Termine le socket et le filestream
-            fsRRQ.Close();
-            SocketThread.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return;                
+            }
+            finally
+            {
+                //Termine le socket et le filestream
+                fsRRQ.Close();
+                SocketThread.Close();
+            }           
         }
         private void EnvoieErreur(byte NoErreur)
         {
