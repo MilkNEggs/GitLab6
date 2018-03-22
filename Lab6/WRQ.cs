@@ -66,7 +66,7 @@ namespace Lab6
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString());
                     return;
                 }
 
@@ -77,7 +77,8 @@ namespace Lab6
                 }
                 catch (SocketException ex)
                 {
-                    //MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString());
+                    return;
                 }
 
                 //Écriture de la trame du premier ACK et envoie
@@ -98,9 +99,9 @@ namespace Lab6
                         if (bTrame[1] == 3)
                         {
                             //Si le numéro de bloc est valide
-                            if (bTrame[2] == (NoBloc2 & 0xFF00) && bTrame[3] == (NoBloc & 0xFF))
+                            if (bTrame[2] == (NoBloc2 & 0xFF) && bTrame[3] == (NoBloc & 0xFF))
                             {
-                                
+
                                 //Écriture de la trame du ACK 
                                 bEnvoie[0] = 0;
                                 bEnvoie[1] = 4;
@@ -110,7 +111,13 @@ namespace Lab6
 
                                 //Écritue dans le fichier
                                 Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu - 4);
-                                swWRQ.WriteLine(Donnees);
+                                //swWRQ.Write(Donnees);
+
+                                //Boucle pour transférer string dans byte
+                                for (int i = 0; i < Donnees.Length; i++)
+                                {
+                                    fsWRQ.WriteByte((byte)Donnees[i]);
+                                }
 
                                 SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
 
@@ -126,13 +133,12 @@ namespace Lab6
                         }
 
                         //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
-                        if (NoBloc == 255)
+                        if (NoBloc == 256)
                         {
                             NoBloc2++;
                             NoBloc = 0;
-                            if(NoBloc2 == 255)
+                            if(NoBloc2 == 256)
                             {
-                                NoBloc = 0;
                                 NoBloc2 = 0;
                             }
                         }
@@ -156,7 +162,8 @@ namespace Lab6
                 }
                 catch (Exception ex)
                 {
-
+                    MessageBox.Show(ex.ToString());
+                    return;
                 }
             }
 

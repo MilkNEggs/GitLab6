@@ -74,24 +74,24 @@ namespace Lab6
             //Boucle jusqu'à temps que tous les bloc sont 
             //envoyés ou que 3 ack ou que le transfert soit trop long
 
-            while(NbreBloc >= NoBloc && ErreurACK < 3 && Arrets < 10 )
+            while(NbreBloc >= (NoBloc2*256+NoBloc) && ErreurACK < 3 && Arrets < 10 )
             {
                 EnvoyerBloc(fsRRQ, (byte)NoBloc, (byte)NoBloc2);
                 if (SocketThread.Poll(5000000, SelectMode.SelectRead))
                 {
                     NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantRRQ);
                     //Ne correcspond pas au bon ack
-                    if (bTrame[2] != (NoBloc2 & 0xFF00) || bTrame[3] != (NoBloc & 0xFF))
+                    if (bTrame[2] != (NoBloc2 & 0xFF) || bTrame[3] != (NoBloc & 0xFF))
                         ErreurACK++;
                     //Si ça marché
                     else
                     {
                         NoBloc++;
-                        if (NoBloc == 255)
+                        if (NoBloc == 256)
                         {
                             NoBloc = 0;
                             NoBloc2++;
-                            if (NoBloc2 == 255)
+                            if (NoBloc2 == 256)
                             {
                                 NoBloc2 = 0;
                             }
@@ -125,7 +125,7 @@ namespace Lab6
         {
             byte[] Donnees;
 
-            if (((NoBloc2 * 128) + NoBloc) == (m_LongueurFichier / 512) + 1)
+            if (((NoBloc2 * 256) + NoBloc) == (m_LongueurFichier / 512) + 1)
                 Donnees = new byte[m_LongueurFichier % 512];
             else
                 Donnees = new byte[512];
@@ -135,7 +135,7 @@ namespace Lab6
             bEnvoie[1] = 3;
             bEnvoie[2] = NoBloc2;
             bEnvoie[3] = NoBloc;
-            fsRRQ.Seek(512 * (((NoBloc2 * 128) + NoBloc) - 1), SeekOrigin.Begin);
+            fsRRQ.Seek(512 * (((NoBloc2 * 256) + NoBloc)), SeekOrigin.Begin);
             fsRRQ.Read(Donnees,0, Donnees.Length);
             Buffer.BlockCopy(Donnees, 0, bEnvoie, 4, Donnees.Length);
             SocketThread.SendTo(bEnvoie, m_PointDistantRRQ);
