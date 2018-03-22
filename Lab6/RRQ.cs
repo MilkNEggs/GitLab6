@@ -93,7 +93,6 @@ namespace Lab6
                             NoBloc2++;
                             if (NoBloc2 == 255)
                             {
-                                NoBloc = 0;
                                 NoBloc2 = 0;
                             }
                         }
