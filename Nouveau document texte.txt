@@ -1,0 +1,4 @@
+var objTftpServer;
+ 
+objTftpServer  = new ActiveXObject ( "ActiveXperts.TftpServer" );
+
