@@ -28,11 +28,7 @@ C:\Code\GitLab6\Lab6\bin\Debug\Lab6.pdb
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.csprojResolveAssemblyReference.cache
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.Form1.resources
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.Properties.Resources.resources
-<<<<<<< HEAD
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.csproj.GenerateResource.cache
-=======
-C:\Code\GitLab6\Lab6\obj\Debug\Lab6.csproj.GenerateResource.Cache
->>>>>>> Test
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.csproj.CoreCompileInputs.cache
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.exe
 C:\Code\GitLab6\Lab6\obj\Debug\Lab6.pdb

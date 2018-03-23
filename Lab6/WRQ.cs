@@ -38,7 +38,7 @@ namespace Lab6
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             bool Fin = false, Lire;
-            string Chemin = m_StrFichierWRQ;
+            string Chemin = m_StrFichierWRQ, Donnees;
             byte[] bTrame = new byte[516];
             byte[] bEnvoie = new byte[25];
             byte[] bNoBloc = new byte[2];
@@ -91,11 +91,11 @@ namespace Lab6
                                     bEnvoie[2] = (byte)NoBloc2;
                                     bEnvoie[3] = (byte)NoBloc;
                                     //Écritue dans le fichier
-                                    //Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu - 4);
-                                    //swWRQ.Write(Donnees);
+                                    Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu +4);
+                                    swWRQ.Write(Donnees);
                                     //Boucle pour transférer string dans byte
-                                    for (int i = 0; i < bTrame.Length; i++)
-                                        fsWRQ.Write(bTrame,4,bTrame.Length-4);
+                                    //for (int i = 0; i < bTrame.Length; i++)
+                                    //    fsWRQ.Write(bTrame,4,bTrame.Length-4);
                                     SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
                                     NoBloc++;
                                 }
