@@ -1,10 +1,6 @@
 ﻿//William Lafontaine
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
@@ -67,9 +63,7 @@ namespace Lab6
             m_LongueurFichier = fsRRQ.Length;
             int NbreBloc = (int)m_LongueurFichier / 512;
             if ((int)m_LongueurFichier % 512 != 0)
-            {
                 NbreBloc++;
-            }
 
             //Boucle jusqu'à temps que tous les bloc sont 
             //envoyés ou que 3 ack ou que le transfert soit trop long
@@ -94,9 +88,7 @@ namespace Lab6
                                 NoBloc = 0;
                                 NoBloc2++;
                                 if (NoBloc2 == 256)
-                                {
                                     NoBloc2 = 0;
-                                }
                             }
                         }
                     }
@@ -134,8 +126,7 @@ namespace Lab6
         private void EnvoyerBloc(FileStream fsRRQ, byte NoBloc, byte NoBloc2)
         {
             byte[] Donnees;
-
-            if (((NoBloc2 * 256) + NoBloc) == (m_LongueurFichier / 512) + 1)
+            if (((NoBloc2 * 256) + NoBloc) == (m_LongueurFichier / 512)+1)
                 Donnees = new byte[m_LongueurFichier % 512];
             else
                 Donnees = new byte[512];
@@ -145,7 +136,7 @@ namespace Lab6
             bEnvoie[1] = 3;
             bEnvoie[2] = NoBloc2;
             bEnvoie[3] = NoBloc;
-            fsRRQ.Seek(512 * (((NoBloc2 * 256) + NoBloc)), SeekOrigin.Begin);
+            fsRRQ.Seek(512 * (((NoBloc2 * 256) + NoBloc-1)), SeekOrigin.Begin);
             fsRRQ.Read(Donnees,0, Donnees.Length);
             Buffer.BlockCopy(Donnees, 0, bEnvoie, 4, Donnees.Length);
             SocketThread.SendTo(bEnvoie, m_PointDistantRRQ);
