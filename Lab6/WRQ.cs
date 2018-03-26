@@ -38,14 +38,13 @@ namespace Lab6
             EndPoint PointLocalThread = new IPEndPoint(0, 0);
             Socket SocketThread = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             bool Fin = false, Lire;
-            string Chemin = m_StrFichierWRQ, Donnees;
+            string Chemin = m_StrFichierWRQ;
             byte[] bTrame = new byte[516];
             byte[] bEnvoie = new byte[25];
             byte[] bNoBloc = new byte[2];
             byte[] bErreur = new byte[100];
             byte[] MessageErreur = new byte[30];
-            FileStream fsWRQ = null;
-            StreamWriter swWRQ = null;
+            BinaryWriter bwWRQ = null;
             int NoBloc = 1, NbrRecu, Arrets = 0, ErreurACK = 0, NoBloc2 = 0;            
 
             //Vérification si le fichier existe déjà, envoie d'un message d'erreur si oui
@@ -54,8 +53,8 @@ namespace Lab6
                 //Création du fichier
                 try
                 {
-                    fsWRQ = new FileStream(Chemin, FileMode.Create, FileAccess.Write, FileShare.None);
-                    swWRQ = new StreamWriter(fsWRQ);
+                    bwWRQ = new BinaryWriter(File.OpenWrite(m_StrFichierWRQ));
+
                     //Bind du socket sur le point local
                     SocketThread.Bind(PointLocalThread);
                 }
@@ -91,12 +90,10 @@ namespace Lab6
                                     bEnvoie[2] = (byte)NoBloc2;
                                     bEnvoie[3] = (byte)NoBloc;
                                     SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
-                                    //Écritue dans le fichier
-                                    Donnees = "";
-                                    Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu - 4);
-                                    swWRQ.Write(Donnees);
-                           
 
+                                    //Écritue dans le fichier
+                                    bwWRQ.Write(bTrame, 4, NbrRecu - 4);
+                                    
                                     NoBloc++;
                                     //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
                                     if (NoBloc == 256)
@@ -126,8 +123,7 @@ namespace Lab6
                 }
                 finally
                 {
-                    swWRQ.Close();
-                    fsWRQ.Close();
+                    bwWRQ.Close();
                     SocketThread.Close();
                 }
             }            
