@@ -78,7 +78,7 @@ namespace Lab6
                     {
                         //Vérifie que une trame a été envoyée
                         if (Lire = SocketThread.Poll(5000000, SelectMode.SelectRead))
-                        {
+                        {                            
                             NbrRecu = SocketThread.ReceiveFrom(bTrame, ref m_PointDistantWRQ);
                             if (bTrame[1] == 3)
                             {
@@ -90,29 +90,29 @@ namespace Lab6
                                     bEnvoie[1] = 4;
                                     bEnvoie[2] = (byte)NoBloc2;
                                     bEnvoie[3] = (byte)NoBloc;
-                                    //Écritue dans le fichier
-                                    Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu +4);
-                                    swWRQ.Write(Donnees);
-                                    //Boucle pour transférer string dans byte
-                                    //for (int i = 0; i < bTrame.Length; i++)
-                                    //    fsWRQ.Write(bTrame,4,bTrame.Length-4);
                                     SocketThread.SendTo(bEnvoie, m_PointDistantWRQ);
+                                    //Écritue dans le fichier
+                                    Donnees = "";
+                                    Donnees = Encoding.ASCII.GetString(bTrame).Substring(4, NbrRecu - 4);
+                                    swWRQ.Write(Donnees);
+                           
+
                                     NoBloc++;
+                                    //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
+                                    if (NoBloc == 256)
+                                    {
+                                        NoBloc2++;
+                                        NoBloc = 0;
+                                        if (NoBloc2 == 256)
+                                            NoBloc2 = 0;
+                                    }
+                                    //Vérifie si la dernière trame a été envoyée du client vers le serveur
+                                    if (NbrRecu < 516)
+                                        Fin = true;
                                 }
                                 else
                                     ErreurACK++;
-                            }
-                            //Si le numéro de bloc atteint sa capacité maximale (FF FF ou 65535)
-                            if (NoBloc == 256)
-                            {
-                                NoBloc2++;
-                                NoBloc = 0;
-                                if (NoBloc2 == 256)
-                                    NoBloc2 = 0;
-                            }
-                            //Vérifie si la dernière trame a été envoyée du client vers le serveur
-                            if (NbrRecu < 516)
-                                Fin = true;
+                            }                                                       
                         }
                         else
                             Arrets++;
