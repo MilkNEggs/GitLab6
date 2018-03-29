@@ -60,7 +60,6 @@ namespace Lab6
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
                     return;
                 }                
                 //Boucle d'écriture dans le fichier voulu
@@ -118,7 +117,6 @@ namespace Lab6
                 }                
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
                     return;
                 }
                 finally

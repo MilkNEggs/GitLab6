@@ -38,7 +38,6 @@ namespace Lab6
             //Si la connexion a des problèmes
             catch (SocketException ex)
             {
-                MessageBox.Show(ex.ToString());
                 return;
             }
 
@@ -95,7 +94,6 @@ namespace Lab6
             //Si la connexion a des problèmes
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
                 return;
             }
             //Fini toujours par fermer le socket réseau

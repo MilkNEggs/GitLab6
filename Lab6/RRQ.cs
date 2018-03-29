@@ -51,7 +51,6 @@ namespace Lab6
             }
             catch (Exception Erreur)
             {
-                MessageBox.Show(Erreur.ToString());
                 EnvoieErreur(1);
                 SocketThread.Close();
                 return;
@@ -99,7 +98,6 @@ namespace Lab6
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
                 return;                
             }
             finally
